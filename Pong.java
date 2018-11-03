@@ -2,6 +2,7 @@ import java.applet.*;
 import java.awt.*;
 import java.awt.geom.*;
 import java.awt.event.*;
+import java.util.*;
 
 public class Pong extends Applet implements Runnable,KeyListener{
 	
@@ -22,6 +23,9 @@ public class Pong extends Applet implements Runnable,KeyListener{
 	Shape rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
 	Shape rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
 	Shape circle = new Ellipse2D.Double(ballX,ballY,ballWidth,ballHeight);
+	
+	//For MultiKeyListener
+	Set<Character> pressed = new HashSet<Character>();
 	
 	@Override
 	public void init(){
@@ -100,54 +104,41 @@ public class Pong extends Applet implements Runnable,KeyListener{
 	}
 	
 	@Override
-	public void keyPressed(KeyEvent e){
-		int key = e.getKeyCode();
-		/*
-		switch(key)
-		{
-			case KeyEvent.VK_UP:
-				rightY-=8;
-				rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
-				break;
-			case KeyEvent.VK_DOWN:
-				rightY+=8;
-				rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
-				break;
-			case KeyEvent.VK_W:
-				leftY-=8;
-				rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
-				break;
-			case KeyEvent.VK_S:
-				leftY+=8;
-				rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
-				break;
-		}*/
-		
-		if(key == KeyEvent.VK_UP){
-			rightY-=speed;
-			rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
+	public synchronized void keyPressed(KeyEvent e){
+		pressed.add(e.getKeyChar());
+
+		if(pressed.size()>=1){
+			for(Character c : pressed){
+				switch(c)
+				{
+					case 56:
+						rightY-=8;
+						rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
+						break;
+					case 53:
+						rightY+=8;
+						rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
+						break;
+					case 'w':
+						leftY-=8;
+						rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
+						break;
+					case 's':
+						leftY+=8;
+						rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
+						break;
+				}
+			}
 		}
 		
-		if(key == KeyEvent.VK_DOWN){
-			rightY+=speed;
-			rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
-		}
-		
-		if(key == KeyEvent.VK_W){
-			leftY-=speed;
-			rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
-		}
-		
-		if(key == KeyEvent.VK_S){
-			leftY+=speed;
-			rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
-		}
 		repaint();
 	}
 	
 	//We won't use this functions
 	@Override
-	public void keyReleased(KeyEvent e){}
+	public void keyReleased(KeyEvent e){
+		pressed.remove(e.getKeyChar());
+	}
 	@Override
 	public void keyTyped(KeyEvent e){}
 }
