@@ -4,6 +4,12 @@ import java.awt.*;
 public class Pong extends Applet implements Runnable{
 	boolean running = true;
 	Thread thread = new Thread(this);
+	
+	//Double Buffering
+	Image dbImage;
+	Graphics dbg;
+	
+	//Reusable Values;
 	int rectWidth = 8;
 	int rectHeight = 80;
 	int player1Score = 0,player1ScoreX,player1ScoreY;
@@ -15,7 +21,9 @@ public class Pong extends Applet implements Runnable{
 		setSize(800,648);
 	}
 	
-	public void start(){thread.start();}
+	public void start(){
+		thread.start();
+	}
 	public void destroy(){running = false;}
 	
 	public void stop(){running = false;}
@@ -40,14 +48,22 @@ public class Pong extends Applet implements Runnable{
 		g.fillOval(ballX,ballY,ballWidth,ballHeight);
 	}
 	
-	public void update(){
-		//update the values of the ball
+	public void update(Graphics g){
+		
+		//Double Buffering
+		dbImage = createImage(800,648);
+		dbg = dbImage.getGraphics();
+		paint(dbg);
+		g.drawImage(dbImage,0,0,this);
+		
+		//updating values of ball
+		ballX +=3;
 	}
 	public void run(){
-		init();
+		
 		while(running){
 			repaint();
-			update();
+			update(getGraphics());
 			try{
 				Thread.sleep(20);
 			}catch(InterruptedException e){
