@@ -21,12 +21,12 @@ public class Pong extends Applet implements Runnable,KeyListener{
 	int player1Score = 0,player1ScoreX,player1ScoreY;
 	int player2Score = 0,player2ScoreX,player2ScoreY; 
 	int initBallX = 400,initBallY = 324,ballX = 400,ballY = 324,ballHeight=16,ballWidth=16;
-	int leftY = 264, rightY = 264;//Taking only y co-ordinates as it can only move in y-axis
+	int intialY = 264,leftY = 264, rightY = 264;//Taking only y co-ordinates as it can only move in y-axis
 	int speed = 16,vx = 2,vy=2;
 	
 	//Shape Objects
-	Shape rectLeft = new Rectangle(8,leftY,rectWidth,rectHeight);
-	Shape rectRight = new Rectangle(784,rightY,rectWidth,rectHeight);
+	Shape rectLeft = new Rectangle2D.Double(8,leftY,rectWidth,rectHeight);
+	Shape rectRight = new Rectangle2D.Double(784,rightY,rectWidth,rectHeight);
 	Shape circle = new Ellipse2D.Double(ballX,ballY,ballWidth,ballHeight);
 	
 	//For MultiKeyListener
@@ -75,6 +75,7 @@ public class Pong extends Applet implements Runnable,KeyListener{
 		}else if(gameOver){//For end screen
 			gd.setColor(Color.RED);
 			gd.drawString("Press 'SPACE' to Continue",328,264);
+			leftY = rightY = intialY;
 			if(space){
 				gameOver = false;
 				space = false;
@@ -89,6 +90,7 @@ public class Pong extends Applet implements Runnable,KeyListener{
 					intro = true;
 					space = false;
 					player1Score = player2Score = 0;
+					leftY = rightY = intialY;
 				}
 			}else if(player2Score == 5){
 				gd.setColor(Color.GREEN);
@@ -98,6 +100,7 @@ public class Pong extends Applet implements Runnable,KeyListener{
 					intro = true;
 					space = false;
 					player1Score = player2Score = 0;
+					leftY = rightY = intialY;
 				}
 			}else{
 				//Border white rect as apple window size is changing
@@ -128,7 +131,6 @@ public class Pong extends Applet implements Runnable,KeyListener{
 		dbg = dbImage.getGraphics();
 		paint(dbg);
 		g.drawImage(dbImage,0,0,this);
-		
 		//updating ball values
 		if(player1Score!=5 && player2Score!=5){
 			ballX += vx;
@@ -142,14 +144,23 @@ public class Pong extends Applet implements Runnable,KeyListener{
 				ballX = initBallX;
 				ballY = initBallY;
 				player1Score++;
+			}else{
+				Area areaLeft = new Area(rectLeft);
+				Area areaRight = new Area(rectRight);
+				
+				areaLeft.intersect(new Area(circle));
+				areaRight.intersect(new Area(circle));
+				
+				if(!areaLeft.isEmpty() || !areaRight.isEmpty())
+					vx = vx * (-1);
 			}
 			ballY += vy;
 			if(ballY < 8 || ballY > 640)
 				vy= vy * (-1);
-
+			
 			//creating circle with updated values
 			circle = new Ellipse2D.Double(ballX,ballY,ballWidth,ballHeight);
-			}
+		}
 	}
 	
 	@Override
