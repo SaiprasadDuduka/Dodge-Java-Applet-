@@ -21,7 +21,7 @@ public class Pong extends Applet implements Runnable,KeyListener{
 	int player1Score = 0,player1ScoreX,player1ScoreY;
 	int player2Score = 0,player2ScoreX,player2ScoreY; 
 	int initBallX = 400,initBallY = 324,ballX = 400,ballY = 324,ballHeight=16,ballWidth=16;
-	int intialY = 264,leftY = 264, rightY = 264;//Taking only y co-ordinates as it can only move in y-axis
+	int initialY = 264,leftY = 264, rightY = 264;//Taking only y co-ordinates as it can only move in y-axis
 	int speed = 16,vx = 2,vy=2;
 	
 	//Shape Objects
@@ -68,6 +68,7 @@ public class Pong extends Applet implements Runnable,KeyListener{
 			g.setColor(Color.GREEN);
 			gd.drawString("Pong",392,248);
 			gd.drawString("Press 'Space' to Start",328,264); 
+			leftY = rightY = initialY;
 			if(space){
 				intro = false;
 				space = false;
@@ -75,7 +76,7 @@ public class Pong extends Applet implements Runnable,KeyListener{
 		}else if(gameOver){//For end screen
 			gd.setColor(Color.RED);
 			gd.drawString("Press 'SPACE' to Continue",328,264);
-			leftY = rightY = intialY;
+			leftY = rightY = initialY;
 			if(space){
 				gameOver = false;
 				space = false;
@@ -90,7 +91,6 @@ public class Pong extends Applet implements Runnable,KeyListener{
 					intro = true;
 					space = false;
 					player1Score = player2Score = 0;
-					leftY = rightY = intialY;
 				}
 			}else if(player2Score == 5){
 				gd.setColor(Color.GREEN);
@@ -100,7 +100,6 @@ public class Pong extends Applet implements Runnable,KeyListener{
 					intro = true;
 					space = false;
 					player1Score = player2Score = 0;
-					leftY = rightY = intialY;
 				}
 			}else{
 				//Border white rect as apple window size is changing
@@ -145,14 +144,12 @@ public class Pong extends Applet implements Runnable,KeyListener{
 				ballY = initBallY;
 				player1Score++;
 			}else{
-				Area areaLeft = new Area(rectLeft);
-				Area areaRight = new Area(rectRight);
-				
-				areaLeft.intersect(new Area(circle));
-				areaRight.intersect(new Area(circle));
-				
-				if(!areaLeft.isEmpty() || !areaRight.isEmpty())
+				if((ballX == 8) && ((ballY > leftY - 8) && (ballY < leftY + rectHeight + 8)))
 					vx = vx * (-1);
+			
+				if((ballX == 784 - rectWidth) && ((ballY > rightY - 8) && (ballY < rightY + rectHeight + 8)))
+					vx = vx * (-1);
+					
 			}
 			ballY += vy;
 			if(ballY < 8 || ballY > 640)
